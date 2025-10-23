@@ -1,0 +1,206 @@
+
+// 封装SSE连接，带错误重试机制
+interface SEOptions {
+    maxRetries?: number;
+    retryInterval?: number;
+    maxRetryInterval?: number;
+}
+export class SEEventSource {
+    private url: string;
+    private options: SEOptions;
+    private eventSource: EventSource | null = null;
+    private retryCount = 0;
+    private retryTimer: NodeJS.Timeout | null = null;
+    private isManuallyClosed = false;
+    private eventListeners: Map<string, Set<EventListener>> = new Map();
+
+    constructor(url: string, options: SEOptions = {}) {
+        this.url = url;
+        this.options = {
+            maxRetries: options.maxRetries ?? 5,
+            retryInterval: options.retryInterval ?? 1000,
+            maxRetryInterval: options.maxRetryInterval ?? 30000,
+            ...options,
+        };
+    }
+    /**
+     * 建立SSE连接
+     */
+    connect() {
+
+
+        try {
+            // 创建EventSource实例
+            this.eventSource = new EventSource(this.url);
+            
+            // 设置标准事件监听器
+            this.setupDefaultListeners();
+            
+            // 恢复用户自定义事件监听器
+            this.restoreEventListeners();
+            
+            // 重置重试计数
+            this.retryCount = 0;
+            
+        } catch (error) {
+            console.error('SSE连接初始化失败:', error);
+            this.handleConnectionError();
+        }
+    }
+
+    /**
+     * 设置默认事件监听器
+     */
+    private setupDefaultListeners() {
+        if (!this.eventSource) return;
+
+        this.eventSource.addEventListener('open', (event) => {
+            console.log('SSE连接已打开', event);
+        });
+
+        this.eventSource.addEventListener('error', (error) => {
+            console.error('SSE连接错误:', error);
+            this.handleConnectionError();
+        });
+
+        // 默认message事件监听器
+        this.eventSource.addEventListener('message', (event) => {
+            console.log('收到SSE消息:', event.data);
+        });
+    }
+
+    /**
+     * 处理连接错误并重试
+     */
+    private handleConnectionError() {
+        // 清理当前连接
+        this.cleanup();
+
+        // 如果是手动关闭，不进行重试
+        if (this.isManuallyClosed) {
+            return;
+        }
+
+        // 检查是否达到最大重试次数
+        if (this.retryCount >= this.options.maxRetries!) {
+            console.error(`已达到最大重试次数(${this.options.maxRetries})，停止重试`);
+            return;
+        }
+
+        // 计算重试间隔（指数退避）
+        this.retryCount++;
+        const retryInterval = Math.min(
+            this.options.retryInterval! * Math.pow(2, this.retryCount - 1),
+            this.options.maxRetryInterval!
+        );
+
+        console.log(`将在${retryInterval}ms后进行第${this.retryCount}次重试`);
+        
+        // 设置重试定时器
+        this.retryTimer = setTimeout(() => {
+            console.log(`开始第${this.retryCount}次重试`);
+            this.connect();
+        }, retryInterval);
+    }
+
+    /**
+     * 添加自定义事件监听器
+     */
+    addEventListener(event: string, listener: EventListener) {
+        // 保存监听器到映射中
+        if (!this.eventListeners.has(event)) {
+            this.eventListeners.set(event, new Set());
+        }
+        this.eventListeners.get(event)!.add(listener);
+
+        // 如果连接已存在，立即添加监听器
+        if (this.eventSource) {
+            this.eventSource.addEventListener(event, listener);
+        }
+    }
+
+    /**
+     * 移除事件监听器
+     */
+    removeEventListener(event: string, listener: EventListener) {
+        const listeners = this.eventListeners.get(event);
+        if (listeners) {
+            listeners.delete(listener);
+            if (listeners.size === 0) {
+                this.eventListeners.delete(event);
+            }
+        }
+
+        // 如果连接已存在，立即移除监听器
+        if (this.eventSource) {
+            this.eventSource.removeEventListener(event, listener);
+        }
+    }
+
+    /**
+     * 恢复所有事件监听器
+     */
+    private restoreEventListeners() {
+        if (!this.eventSource) return;
+
+        this.eventListeners.forEach((listeners, event) => {
+            // 跳过标准事件，它们已经在setupDefaultListeners中设置
+            if (['open', 'error', 'message'].includes(event)) {
+                return;
+            }
+            
+            listeners.forEach(listener => {
+                this.eventSource!.addEventListener(event, listener);
+            });
+        });
+    }
+
+    /**
+     * 清理资源
+     */
+    private cleanup() {
+        // 清除重试定时器
+        if (this.retryTimer) {
+            clearTimeout(this.retryTimer);
+            this.retryTimer = null;
+        }
+
+        // 关闭EventSource连接
+        if (this.eventSource) {
+            this.eventSource.close();
+            this.eventSource = null;
+        }
+    }
+
+    /**
+     * 手动关闭连接
+     */
+    close() {
+        this.isManuallyClosed = true;
+        this.cleanup();
+        console.log('SSE连接已手动关闭');
+    }
+
+    /**
+     * 重新打开连接
+     */
+    reconnect() {
+        this.isManuallyClosed = false;
+        this.cleanup();
+        this.connect();
+    }
+
+    /**
+     * 获取连接状态
+     */
+    isConnected(): boolean {
+        return this.eventSource !== null && this.eventSource.readyState === EventSource.OPEN;
+    }
+
+    /**
+     * 获取当前重试次数
+     */
+    getRetryCount(): number {
+        return this.retryCount;
+    }
+}

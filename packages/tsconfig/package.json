@@ -1,0 +1,15 @@
+{
+  "name": "@infrastructure-monorepo/tsconfig",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.ts",
+  "types": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "files": ["base.json", "react.json", "index.ts"],
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@8.6.0"
+}

@@ -1,0 +1,22 @@
+{
+    "name": "@infrastructure-monorepo",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "dev:web": "pnpm --filter web dev",
+        "dev:api-client": "pnpm --filter @infrastructure-monorepo/api-client dev",
+        "dev": "concurrently \"pnpm dev:api-client\" \"pnpm dev:web\"",
+        "build:web": "pnpm --filter web build",
+        "lint:web": "pnpm --filter web lint",
+        "clean": "rimraf node_modules && rimraf packages/*/node_modules && rimraf apps/*/node_modules"
+    },
+    "devDependencies": {
+        "concurrently": "^8.2.0",
+        "rimraf": "^5.0.0",
+        "typescript": "^5.9.3"
+    },
+    "packageManager": "pnpm@8.6.0",
+    "dependencies": {
+        "init": "^0.1.2"
+    }
+}
