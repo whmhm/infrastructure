@@ -87,9 +87,9 @@ function Login() {
                 )}
               </div>
               <div>
-                <Button type="submit" className="w-full">
+                <button type="submit" className="w-full">
                   登录
-                </Button>
+                </button>
               </div>
             </form>
           </div>
