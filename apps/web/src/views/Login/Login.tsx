@@ -17,11 +17,22 @@ function Login() {
     if (username && password) {
       setError('');
       try {
-        await login({ username, password });
+        const response = await login({ username, password });
+        
+        // 存储token到localStorage
+        if (response?.token) {
+          localStorage.setItem('token', response.token);
+        }
+        
         // 登录成功后跳转到首页
         navigate('/home');
-      } catch (error) {
-        setError('登录失败，请检查用户名和密码');
+      } catch (error: any) {
+        // 处理不同类型的错误
+        if (error.response?.data?.error) {
+          setError(error.response.data.error);
+        } else {
+          setError('登录失败，请检查用户名和密码');
+        }
       } 
     } else {
       setError('请输入用户名和密码');

@@ -19,17 +19,28 @@ function Login() {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const handleLogin = (e) => __awaiter(this, void 0, void 0, function* () {
+        var _a, _b;
         e.preventDefault();
         // 简单的登录验证
         if (username && password) {
             setError('');
             try {
-                yield login({ username, password });
+                const response = yield login({ username, password });
+                // 存储token到localStorage
+                if (response === null || response === void 0 ? void 0 : response.token) {
+                    localStorage.setItem('token', response.token);
+                }
                 // 登录成功后跳转到首页
                 navigate('/home');
             }
             catch (error) {
-                setError('登录失败，请检查用户名和密码');
+                // 处理不同类型的错误
+                if ((_b = (_a = error.response) === null || _a === void 0 ? void 0 : _a.data) === null || _b === void 0 ? void 0 : _b.error) {
+                    setError(error.response.data.error);
+                }
+                else {
+                    setError('登录失败，请检查用户名和密码');
+                }
             }
         }
         else {

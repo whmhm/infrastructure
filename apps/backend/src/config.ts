@@ -12,7 +12,9 @@ export const DB_CONFIG = {
 };
 
 // API配置
-export const API_PREFIX = '/api';
+export const API_PREFIX = '/api';  
+
+
 
 // CORS配置
 export const CORS_CONFIG = {

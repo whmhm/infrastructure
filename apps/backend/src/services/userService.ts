@@ -1,9 +1,9 @@
-import { User, UserCreateRequest } from '../types/users';
+import { User } from '../types/users';
+import { UserCreateRequest, LoginRequest } from '../types/users';
 import { UserModel } from '../model/userModel';
 
 const userModel = new UserModel();
 
-// 用户服务类
 export class UserService {
   // 获取所有用户
   async getAllUsers(): Promise<User[]> {
@@ -15,7 +15,11 @@ export class UserService {
     return await userModel.getUserById(id);
   }
 
-
+  // 用户登录
+  async login(credentials: LoginRequest): Promise<User | null> {
+    const user = await userModel.login(credentials);
+    return user;
+  }
 
   // 创建用户
   async createUser(userData: UserCreateRequest): Promise<User> {

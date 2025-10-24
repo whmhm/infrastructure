@@ -1,9 +1,9 @@
 import { HttpService } from './apiClient';
-import { LoginRequest, User } from './types';
+import { ApiResponse, LoginRequest, User } from './types';
 
 
 const userApi = new HttpService({
-    baseURL: '/api',
+    baseURL: 'http://localhost:3001/api',
     timeout: 10000,
   });
 function login(loginData: LoginRequest) {
@@ -23,7 +23,7 @@ function getUsers(params?: Record<string, unknown>) {
 }
 
 function getAllUsers() {
-    return userApi.request<User[]>({
+    return userApi.request<ApiResponse<User[]>>({
         method: "GET",
         url: "/users/all",
     });

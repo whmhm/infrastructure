@@ -117,31 +117,42 @@ class HttpService {
         // 确保配置对象存在
         const requestConfig = { ...config };
         
-        // 处理baseURL和url的拼接，避免重复的斜杠
+        // 处理baseURL和url的拼接，避免重复的斜杠和路径
         if (requestConfig.url) {
-            const baseURL = this.httpInstance.defaults.baseURL || '';
-            const url = requestConfig.url;
+            let baseURL = this.httpInstance.defaults.baseURL || '';
+            let url = requestConfig.url;
             
-            // 智能拼接baseURL和url，避免重复的斜杠
             if (baseURL && url) {
-                const baseEndsWithSlash = baseURL.endsWith('/');
-                const urlStartsWithSlash = url.startsWith('/');
+                // 去除baseURL末尾的斜杠（如果有）
+                if (baseURL.endsWith('/')) {
+                    baseURL = baseURL.slice(0, -1);
+                }
                 
-                if (baseEndsWithSlash && urlStartsWithSlash) {
-                    requestConfig.url = baseURL + url.substring(1);
-                } else if (!baseEndsWithSlash && !urlStartsWithSlash) {
-                    requestConfig.url = baseURL + '/' + url;
+                // 去除url开头的斜杠（如果有）
+                if (url.startsWith('/')) {
+                    url = url.slice(1);
+                }
+                
+                // 特殊处理：如果url已经以/api开头，并且baseURL也包含/api，避免重复
+                // 这对于处理代理配置特别有用
+                const baseHasApiPrefix = baseURL.endsWith('/api') || baseURL === '/api';
+                const urlHasApiPrefix = url.startsWith('api/') || url === 'api';
+                
+                if (baseHasApiPrefix && urlHasApiPrefix) {
+                    // 如果两边都有api前缀，移除url中的api前缀
+                    requestConfig.url = baseURL + (url.startsWith('api/') ? url.substring(4) : '');
                 } else {
-                    // 其他情况直接拼接
-                    requestConfig.url = baseURL + url;
+                    // 正常拼接，确保中间有一个斜杠
+                    requestConfig.url = `${baseURL}/${url}`;
                 }
             }
         }
+
         console.log('requestConfig',requestConfig);
-        
+
         
         return this.httpInstance(requestConfig) as Promise<T>;
     }
-}
+}   
 
 export { HttpService };

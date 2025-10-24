@@ -3,6 +3,7 @@ import { API_PREFIX } from '../config';
 import healthRouter from './health';
 import userRouter from './users';
 import draftRouter from './draft';
+import loginRouter from './login';
 
 // 创建主路由实例
 const router = new Router({
@@ -11,6 +12,7 @@ const router = new Router({
 
 // 使用子路由并添加allowedMethods()以处理405和501错误
 router.use(healthRouter.routes(), healthRouter.allowedMethods());
+router.use(loginRouter.routes(), loginRouter.allowedMethods());
 router.use('/users', userRouter.routes(), userRouter.allowedMethods());
 router.use('/drafts', draftRouter.routes(), draftRouter.allowedMethods());
 

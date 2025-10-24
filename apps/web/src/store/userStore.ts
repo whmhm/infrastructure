@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { getAllUsers, createUser, User } from '@infrastructure-monorepo/api-client';
 
+
 interface UserState {
   users: User[];
   loading: boolean;
@@ -17,11 +18,8 @@ export const useUserStore = create<UserState>((set) => ({
   loadUsers: async () => {
     set({ loading: true, error: null });
     try {
-      const usersData = await getAllUsers();
-      console.log(usersData);
-      
-      
-      // set({ users: usersData.slice(0, 5), loading: false });
+      const usersData  = await getAllUsers();
+      set({ users: usersData.data, loading: false });
     } catch (error) {
       console.error('Failed to load users:', error);
       set({ error: '加载用户失败', loading: false });

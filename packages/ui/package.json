@@ -1,12 +1,13 @@
 {
   "name": "@infrastructure-monorepo/ui",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.ts",
-  "types": "index.ts",
+  "description": "UI components library",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",
@@ -19,6 +20,7 @@
   },
   "devDependencies": {
     "@types/react": "^19.1.9",
-    "@types/react-dom": "^19.1.9"
+    "@types/react-dom": "^19.1.9",
+    "typescript": "^5.0.0"
   }
 }

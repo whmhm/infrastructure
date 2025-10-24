@@ -18,14 +18,15 @@ export default defineConfig({
   server: {
     hmr: {
       overlay: true,
-      clientPort: undefined
+      // HMR默认启用，不需要显式设置enabled属性
     },
     watch: {
       usePolling: true,
       interval: 50,
       binaryInterval: 200,
-      // 不忽略workspace内的packages变化，但忽略其他node_modules
-      ignored: ['**/node_modules/(?!@infrastructure-monorepo)/**', '**/.git/**']
+      // 优化忽略配置，确保workspace内的packages变化能被正确监视
+      // WatchOptions类型不支持include属性，只需配置ignored
+      // ignored: ['**/node_modules/(?!@infrastructure-monorepo)/**', '**/.git/**']
     },
     host: true,
     port: 5174,
@@ -34,7 +35,6 @@ export default defineConfig({
         target: 'http://localhost:3001',
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace(/^\/api/, '')
       }
     } 
   },  

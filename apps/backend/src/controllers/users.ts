@@ -1,4 +1,4 @@
-import { User, UserCreateRequest } from '../types/users';
+import { User, UserCreateRequest, LoginRequest } from '../types/users';
 import { UserService } from '../services/userService';
 
 export class UserController {
@@ -30,5 +30,10 @@ export class UserController {
   // 删除用户
   async deleteUser(id: number): Promise<boolean> {
     return this.userService.deleteUser(id);
+  }
+  
+  // 用户登录
+  async login(credentials: LoginRequest): Promise<User | null> {
+    return this.userService.login(credentials);
   }
 }

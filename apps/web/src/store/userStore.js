@@ -17,8 +17,7 @@ export const useUserStore = create((set) => ({
         set({ loading: true, error: null });
         try {
             const usersData = yield getAllUsers();
-            console.log(usersData);
-            // set({ users: usersData.slice(0, 5), loading: false });
+            set({ users: usersData.data, loading: false });
         }
         catch (error) {
             console.error('Failed to load users:', error);
