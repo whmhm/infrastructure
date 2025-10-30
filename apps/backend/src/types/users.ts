@@ -22,6 +22,35 @@ export interface LoginRequest {
   password: string;
 }
 
+// 登录响应接口
+export interface LoginResponse {
+  success: boolean;
+  user?: User;
+  token?: string;
+  expiresIn?: string;
+  error?: string;
+}
+
+// JWT相关类型
+export interface JwtPayload {
+  userId: number;
+  username: string;
+  email: string;
+}
+
+// Koa上下文扩展类型
+declare module 'koa' {
+  interface Context {
+    state: {
+      user?: {
+        userId: number;
+        username: string;
+        email: string;
+      };
+    };
+  }
+}
+
 export interface DraftInfo {
   id: string; // 修改为string类型，与MongoDB的ObjectId兼容
   userId: number;

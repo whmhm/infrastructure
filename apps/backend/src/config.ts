@@ -2,6 +2,13 @@
 export const PORT = process.env.PORT || 3001;
 export const NODE_ENV = process.env.NODE_ENV || 'development';
 
+// JWT配置
+export const JWT_CONFIG = {
+  secret: process.env.JWT_SECRET || 'your-secret-key-change-in-production',
+  expiresIn: '24h', // token有效期24小时
+  algorithm: 'HS256' // 使用HS256算法
+};
+
 // 数据库配置（示例配置，实际使用时根据需求修改）
 export const DB_CONFIG = {
   host: process.env.DB_HOST || 'localhost',

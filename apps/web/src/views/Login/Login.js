@@ -7,46 +7,67 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { jsx as _jsx } from "react/jsx-runtime";
 import { useState } from 'react';
-import { Input } from '@infrastructure-monorepo/ui';
+import { Tree } from '@infrastructure-monorepo/ui';
 // Card, CardContent, CardHeader, CardTitle
 import { useNavigate } from 'react-router-dom';
-import { login } from '@infrastructure-monorepo/api-client';
 function Login() {
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const handleLogin = (e) => __awaiter(this, void 0, void 0, function* () {
-        var _a, _b;
-        e.preventDefault();
-        // 简单的登录验证
-        if (username && password) {
-            setError('');
-            try {
-                const response = yield login({ username, password });
-                // 存储token到localStorage
-                if (response === null || response === void 0 ? void 0 : response.token) {
-                    localStorage.setItem('token', response.token);
-                }
-                // 登录成功后跳转到首页
-                navigate('/home');
-            }
-            catch (error) {
-                // 处理不同类型的错误
-                if ((_b = (_a = error.response) === null || _a === void 0 ? void 0 : _a.data) === null || _b === void 0 ? void 0 : _b.error) {
-                    setError(error.response.data.error);
-                }
-                else {
-                    setError('登录失败，请检查用户名和密码');
-                }
-            }
-        }
-        else {
-            setError('请输入用户名和密码');
-        }
+        // e.preventDefault();
+        // // 简单的登录验证
+        // if (username && password) {
+        //   setError('');
+        //   try {
+        //     const response = await login({ username, password });
+        //     // 存储token到localStorage
+        //     if (response?.token) {
+        //       localStorage.setItem('token', response.token);
+        //     }
+        //     // 登录成功后跳转到首页
+        //     navigate('/home');
+        //   } catch (error: any) {
+        //     // 处理不同类型的错误
+        //     if (error.response?.data?.error) {
+        //       setError(error.response.data.error);
+        //     } else {
+        //       setError('登录失败，请检查用户名和密码');
+        //     }
+        //   } 
+        // } else {
+        //   setError('请输入用户名和密码');
+        // }
     });
-    return (_jsx("div", { className: "min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8", children: _jsx("div", { className: "max-w-md w-full space-y-8", children: _jsxs("div", { className: 'bg-white p-16 rounded-lg shadow-md', children: [_jsx("div", { className: 'mb-4', children: _jsx("h2", { className: "text-center text-2xl font-bold text-gray-900", children: "\u7528\u6237\u767B\u5F55" }) }), _jsx("div", { children: _jsxs("form", { className: "mt-8 space-y-6", onSubmit: handleLogin, children: [_jsxs("div", { className: "space-y-4", children: [_jsxs("div", { children: [_jsx("label", { htmlFor: "username", className: "block text-sm font-medium text-gray-700 mb-1", children: "\u7528\u6237\u540D" }), _jsx(Input, { id: "username", name: "username", type: "text", value: username, onChange: (e) => setUsername(e.target.value), required: true, placeholder: "\u8BF7\u8F93\u5165\u7528\u6237\u540D", className: "w-full" })] }), _jsxs("div", { children: [_jsx("label", { htmlFor: "password", className: "block text-sm font-medium text-gray-700 mb-1", children: "\u5BC6\u7801" }), _jsx(Input, { id: "password", name: "password", type: "password", value: password, onChange: (e) => setPassword(e.target.value), required: true, placeholder: "\u8BF7\u8F93\u5165\u5BC6\u7801", className: "w-full" })] }), error && (_jsx("div", { className: "text-red-500 text-sm text-center", children: error }))] }), _jsx("div", { children: _jsx("button", { type: "submit", className: "w-full", children: "\u767B\u5F55" }) })] }) })] }) }) }));
+    const treeData = [
+        {
+            id: "1111",
+            name: "parent",
+            dep: 0,
+            active: true,
+            children: [
+                {
+                    parentId: "1111",
+                    id: "2222",
+                    name: "children",
+                    dep: 1,
+                    active: false,
+                    children: [
+                        {
+                            parentId: "2222",
+                            id: "2-1",
+                            dep: 2,
+                            active: false,
+                            name: "2-1 children",
+                        }
+                    ]
+                }
+            ]
+        }
+    ];
+    return (_jsx("div", { className: "min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8", children: _jsx("div", { className: "max-w-md w-full space-y-8", children: _jsx(Tree, { data: treeData }) }) }));
 }
 export default Login;

@@ -1,6 +1,6 @@
 
 import { DraftInfo } from '../types/users';
-import { createDraft, getDraftById, getDraftsByUserId, updateDraft, deleteDraft, DraftDocument } from '../model/draftModel';
+import { createDraft, getDraftById, getDraftsByUserId, updateDraft, deleteDraft } from '../model/draftModel';
 
 export class DraftService {
   // 创建草稿

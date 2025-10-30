@@ -1,6 +1,8 @@
 import Router from 'koa-router';
 import { UserController } from '../controllers/users';
 import { LoginRequest } from '../types/users';
+import jwt from 'jsonwebtoken';
+import { JWT_CONFIG } from '../config';
 
 const router = new Router();
 const userController = new UserController();
@@ -21,14 +23,19 @@ router.post('/login', async (ctx) => {
     const user = await userController.login(credentials);
     
     if (user) {
-      // 生成简单的token（实际应用中应该使用JWT或其他安全机制）
-      const token = `mock-token-${user.id}-${Date.now()}`;
+      // 使用JWT生成token
+        const token = jwt.sign(
+          { userId: user.id, username: user.name, email: user.email },
+          process.env.JWT_SECRET || 'your-secret-key-change-in-production',
+          { expiresIn: '24h' }
+        );
       
       ctx.status = 200;
       ctx.body = {
         success: true,
         user,
-        token
+        token,
+        expiresIn: JWT_CONFIG.expiresIn
       };
     } else {
       ctx.status = 401;
@@ -45,6 +52,15 @@ router.post('/login', async (ctx) => {
       error: '登录失败，请稍后重试'
     };
   }
+});
+
+// 用户登出接口（可选，在前端清除token即可，后端可以实现token黑名单）
+router.post('/logout', async (ctx) => {
+  ctx.status = 200;
+  ctx.body = {
+    success: true,
+    message: '登出成功'
+  };
 });
 
 export default router;

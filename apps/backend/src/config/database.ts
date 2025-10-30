@@ -8,7 +8,7 @@ export const connectToDatabase = async () => {
     console.log('✅ MongoDB 连接成功');
     return true;
   } catch (error) {
-    console.warn('⚠️ MongoDB 连接失败:', error.message);
+    console.warn('⚠️ MongoDB 连接失败:', error);
     console.warn('⚠️ 服务将继续运行，但部分功能可能不可用');
     // 不退出进程，让服务继续运行
     return false;

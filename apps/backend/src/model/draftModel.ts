@@ -2,7 +2,7 @@ import mongoose, { Document, Schema } from 'mongoose';
 import { DraftInfo } from '../types/users';
 
 // 扩展DraftInfo接口，使其与MongoDB文档兼容
-export interface DraftDocument extends DraftInfo, Document {
+export interface DraftDocument extends Omit<DraftInfo, 'id'>, Document {
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -29,7 +29,7 @@ const DraftSchema = new Schema<DraftDocument>({
 
 // 将MongoDB的_id映射到id字段
 DraftSchema.virtual('id').get(function(this: DraftDocument) {
-  return this._id.toString();
+  return (this._id as mongoose.Types.ObjectId).toString();
 });
 
 // 确保虚拟字段包含在JSON输出中
